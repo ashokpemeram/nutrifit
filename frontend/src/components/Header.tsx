@@ -1,6 +1,6 @@
 import React from 'react';
 import { useApp, getTodayDateString } from '../context/AppContext';
-import { Calendar, Camera, Flame, Bell, Sparkles } from 'lucide-react';
+import { Calendar, Camera, Flame, Sparkles, RefreshCw, Wifi, WifiOff } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
@@ -9,6 +9,9 @@ export const Header: React.FC = () => {
     setIsPhotoScannerOpen,
     toastMessage,
     setActiveTab,
+    isBackendConnected,
+    isCheckingBackend,
+    checkBackendConnection,
   } = useApp();
 
   const isToday = selectedDate === getTodayDateString();
@@ -46,6 +49,52 @@ export const Header: React.FC = () => {
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2">
+            {/* Backend Connection Status Button */}
+            <button
+              onClick={() => checkBackendConnection(true)}
+              disabled={isCheckingBackend}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all shadow-sm active:scale-95 cursor-pointer ${
+                isCheckingBackend
+                  ? 'bg-slate-800 text-slate-400 border-slate-700'
+                  : isBackendConnected
+                  ? 'bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                  : 'bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border-rose-500/30'
+              }`}
+              title={
+                isCheckingBackend
+                  ? 'Checking connection to Express API backend...'
+                  : isBackendConnected
+                  ? 'Backend API is connected & active. Click to re-test.'
+                  : 'Backend API is offline. Operating in local storage mode. Click to re-check.'
+              }
+            >
+              {isCheckingBackend ? (
+                <>
+                  <RefreshCw className="w-3.5 h-3.5 animate-spin text-slate-400" />
+                  <span className="hidden sm:inline">Checking...</span>
+                </>
+              ) : isBackendConnected ? (
+                <>
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  <Wifi className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Backend</span>
+                  <span className="text-[11px] font-bold">Online</span>
+                </>
+              ) : (
+                <>
+                  <span className="relative flex h-2 w-2">
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                  </span>
+                  <WifiOff className="w-3.5 h-3.5" />
+                  <span className="hidden md:inline">Backend</span>
+                  <span className="text-[11px] font-bold">Offline</span>
+                </>
+              )}
+            </button>
+
             {/* AI Photo Scan Button */}
             <button
               onClick={() => setIsPhotoScannerOpen(true)}

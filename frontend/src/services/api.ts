@@ -39,6 +39,20 @@ const setLocalData = (key: string, data: any) => {
 };
 
 export const api = {
+  // Backend Health Check
+  async checkHealth(): Promise<{ connected: boolean; latencyMs?: number }> {
+    const start = Date.now();
+    try {
+      const res = await client.get('/health', { timeout: 3000 });
+      if (res.status === 200 && res.data?.status === 'healthy') {
+        return { connected: true, latencyMs: Date.now() - start };
+      }
+      return { connected: false };
+    } catch (e) {
+      return { connected: false };
+    }
+  },
+
   // Auth & Profile
   async getProfile(): Promise<User> {
     try {

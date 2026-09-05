@@ -26,6 +26,9 @@ interface AppContextType {
   setQuickAddMealType: (type: string) => void;
   toastMessage: string | null;
   showToast: (msg: string) => void;
+  isBackendConnected: boolean | null;
+  isCheckingBackend: boolean;
+  checkBackendConnection: (showToastOnCheck?: boolean) => Promise<boolean>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -70,12 +73,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [quickAddMealType, setQuickAddMealType] = useState<string>('Breakfast');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  const [isBackendConnected, setIsBackendConnected] = useState<boolean | null>(null);
+  const [isCheckingBackend, setIsCheckingBackend] = useState<boolean>(false);
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
   };
+
+  const checkBackendConnection = async (showToastOnCheck = false): Promise<boolean> => {
+    setIsCheckingBackend(true);
+    const res = await api.checkHealth();
+    setIsBackendConnected(res.connected);
+    setIsCheckingBackend(false);
+
+    if (showToastOnCheck) {
+      if (res.connected) {
+        showToast(`Backend API Connected (${res.latencyMs || 0}ms)`);
+      } else {
+        showToast('Backend API Offline (Using Local Storage Mode)');
+      }
+    }
+    return res.connected;
+  };
+
+  // Periodic Backend Health Check & Mount Check
+  useEffect(() => {
+    checkBackendConnection(false);
+    const interval = setInterval(() => {
+      checkBackendConnection(false);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Load User Profile on mount
   useEffect(() => {
@@ -144,6 +175,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setQuickAddMealType,
         toastMessage,
         showToast,
+        isBackendConnected,
+        isCheckingBackend,
+        checkBackendConnection,
       }}
     >
       {children}
