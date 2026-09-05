@@ -2,7 +2,10 @@ import axios from 'axios';
 import { User, DailyLog, FoodItem, ExerciseEntry, WeightEntry, UserProfile } from '../types';
 import { INITIAL_FOOD_DATABASE, DEFAULT_PROFILE } from '../utils/seedData';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE = rawBaseUrl.endsWith('/api') || rawBaseUrl.endsWith('/api/')
+  ? rawBaseUrl
+  : `${rawBaseUrl.replace(/\/$/, '')}/api`;
 
 const client = axios.create({
   baseURL: API_BASE,

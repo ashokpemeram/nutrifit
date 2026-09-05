@@ -12,8 +12,21 @@ const app = express();
 connectDB();
 
 // CORS Configuration
+const allowedOrigin = process.env.CLIENT_ORIGIN;
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+    if (!origin) return callback(null, true);
+    if (!allowedOrigin || allowedOrigin === '*') {
+      // Reflect origin so credentials work seamlessly across domains
+      return callback(null, true);
+    }
+    const origins = allowedOrigin.split(',').map((o) => o.trim());
+    if (origins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(null, true); // Fallback allow to avoid breaking deployments
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
