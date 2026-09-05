@@ -2,7 +2,11 @@ import axios from 'axios';
 import { User, DailyLog, FoodItem, ExerciseEntry, WeightEntry, UserProfile } from '../types';
 import { INITIAL_FOOD_DATABASE, DEFAULT_PROFILE } from '../utils/seedData';
 
-const rawBaseUrl = import.meta.env.VITE_API_BASE_URL || '/api';
+let rawBaseUrl = (import.meta.env.VITE_API_BASE_URL || '/api').trim();
+if (rawBaseUrl && !rawBaseUrl.startsWith('/') && !rawBaseUrl.startsWith('http://') && !rawBaseUrl.startsWith('https://')) {
+  rawBaseUrl = `https://${rawBaseUrl}`;
+}
+
 const API_BASE = rawBaseUrl.endsWith('/api') || rawBaseUrl.endsWith('/api/')
   ? rawBaseUrl
   : `${rawBaseUrl.replace(/\/$/, '')}/api`;
