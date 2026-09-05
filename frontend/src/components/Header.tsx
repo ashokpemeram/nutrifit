@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
               <h1 className="text-lg font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
                 NutriFit
               </h1>
-              <p className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Calorie & Macro Tracker</p>
+              {/* <p className="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Calorie & Macro Tracker</p> */}
             </div>
           </div>
 
