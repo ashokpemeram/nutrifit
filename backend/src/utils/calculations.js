@@ -28,7 +28,7 @@ function calculateTDEE(bmr, activityLevel) {
  * Calculates recommended daily calories and macros
  */
 function calculateTargets(profile) {
-  const { weightKg, heightCm, age, gender, activityLevel, goal, weeklyTargetKg = 0.5 } = profile;
+  const { currentWeightKg: weightKg, heightCm, age, gender, activityLevel, goal, weeklyTargetKg = 0.5 } = profile;
   
   const bmr = calculateBMR(weightKg, heightCm, age, gender);
   const tdee = calculateTDEE(bmr, activityLevel);
